@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid"
 
 import db from "../db/index.js"
-import findOnRows from "../utils/findOnRows.js"
 
 export const shortenUrl = async (req, res) => {
 	const { url } = req.body
@@ -9,16 +8,23 @@ export const shortenUrl = async (req, res) => {
 	try {
 		const { rows } = await db.query(
 			`--sql
-			SELECT "shortUrls"."shortUrl", "shortUrls"."userId" FROM urls 
-    		JOIN "shortUrls" ON "shortUrls"."urlId" = urls.id
-    		WHERE url = $1
+			SELECT urls.id FROM urls 
+			WHERE url = $1
 		`,
 			[url]
 		)
 		if (rows.length) {
-			const shortUrl = findOnRows(rows, "userId", id)
-			if (shortUrl)
-				return res.status(201).send({ shortUrl: shortUrl.shortUrl })
+			const result = await db.query(
+				`--sql
+				SELECT * FROM "shortUrls"
+			 	WHERE "shortUrls"."urlId" = $1 AND "shortUrls"."userId" = $2
+			`,
+				[rows[0].id, id]
+			)
+			if (result.rows.length)
+				return res
+					.status(201)
+					.send({ shortUrl: result.rows[0].shortUrl })
 			else {
 				const newShortUrl = nanoid()
 				await db.query(
@@ -26,7 +32,7 @@ export const shortenUrl = async (req, res) => {
 					INSERT INTO "shortUrls" ("shortUrl", "userId","urlId")
 					VALUES ($1, $2, $3)
 				`,
-					[newShortUrl, id, shortUrl.urlId]
+					[newShortUrl, id, rows[0].id]
 				)
 				return res.status(201).send({ shortUrl: newShortUrl })
 			}
@@ -62,7 +68,7 @@ export const deleteShortUrl = async (req, res) => {
 		const result = await db.query(
 			`--sql
 			DELETE FROM "shortUrls"
-			WHERE "shortUrls"."id" = $1
+			WHERE "shortUrls".id = $1
 			`,
 			[id]
 		)

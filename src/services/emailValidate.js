@@ -1,6 +1,6 @@
 import db from "../db/index.js"
 
-export const emailValidation = async email => {
+export const emailValidate = async email => {
 	try {
 		const { rows } = await db.query(
 			`--sql
@@ -8,11 +8,11 @@ export const emailValidation = async email => {
         `,
 			[email]
 		)
-		return rows[0]
+		return rows
 	} catch (err) {
 		if (process.env.VERBOSE_MODE) console.log({ err })
 		return -1
 	} //FIXME
 }
 
-export default emailValidation
+export default emailValidate
