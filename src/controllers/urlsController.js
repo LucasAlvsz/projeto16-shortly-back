@@ -11,10 +11,11 @@ export const getUrlId = async (req, res) => {
         `,
 			[id]
 		)
-		if (rows.length) return res.status(200).send({ rows })
+		if (rows.length) return res.status(200).send(rows[0])
 		return res.sendStatus(404)
 	} catch (err) {
 		if (process.env.VERBOSE_MODE) console.log({ err })
+		if (err.code === "22P02") return res.sendStatus(404)
 		return res.sendStatus(500)
 	}
 }
