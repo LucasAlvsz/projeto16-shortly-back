@@ -5,9 +5,9 @@ export const getUserById = async (req, res) => {
 	try {
 		const user = await db.query(
 			`--sql
-        SELECT users.id, users.name, SUM("shortUrls".views) AS "visitCount"
+        SELECT users.id, users.name, COALESCE(SUM("shortUrls".views),0) AS "visitCount"
         FROM users
-            JOIN "shortUrls" ON "shortUrls"."userId" = users.id
+            LEFT JOIN "shortUrls" ON "shortUrls"."userId" = users.id
         WHERE users.id = $1
         GROUP BY users.id
     `,
@@ -25,7 +25,6 @@ export const getUserById = async (req, res) => {
     `,
 			[id]
 		)
-		if (!user.rows.length) return res.sendStatus(404)
 
 		const userData = user.rows[0]
 		const userShortUrls = shortUrls.rows
@@ -41,12 +40,12 @@ export const getRanking = async (req, res) => {
 	try {
 		const { rows } = await db.query(`--sql
 			SELECT users.id, users.name,
-			COUNT("shortUrls"."userId") as "linkCount",
+			COUNT("shortUrls"."userId") as "linksCount",
 			COALESCE(SUM("shortUrls".views),0) as "visitCount"
 			FROM users
 				LEFT JOIN "shortUrls" ON "shortUrls"."userId" = users.id
 			GROUP BY users.id
-			ORDER BY "linkCount" DESC LIMIT 10
+			ORDER BY "visitCount" DESC LIMIT 10
 		`)
 		res.status(200).send(rows)
 	} catch (error) {

@@ -23,5 +23,5 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
 	const { userData } = res.locals
 	const token = JWTGenerator(userData)
-	res.status(200).send(token)
+	res.status(200).send({ token })
 }
