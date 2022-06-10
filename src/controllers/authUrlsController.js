@@ -55,3 +55,22 @@ export const shortenUrl = async (req, res) => {
 		res.sendStatus(500)
 	}
 }
+
+export const deleteShortUrl = async (req, res) => {
+	const { id } = req.params
+	try {
+		const result = await db.query(
+			`--sql
+			DELETE FROM "shortUrls"
+			WHERE "shortUrls"."id" = $1
+			`,
+			[id]
+		)
+		if (result.rowCount) return res.sendStatus(204)
+		return res.sendStatus(404)
+	} catch (err) {
+		if (process.env.VERBOSE_MODE) console.log({ err })
+		if (err.code === "23503") return res.sendStatus(404)
+		return res.sendStatus(500)
+	}
+}
