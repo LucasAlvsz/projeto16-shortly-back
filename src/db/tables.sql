@@ -20,11 +20,3 @@ CREATE TABLE "shortUrls"(
     "urlId" INTEGER NOT NULL REFERENCES urls(id),
     "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
-
-CREATE TABLE sessions(
-    id SERIAL PRIMARY KEY,
-    "loggedInAt" TIMESTAMP NOT NULL,
-    "loggedOutAt" TIMESTAMP,
-    "userId" INTEGER NOT NULL REFERENCES users(id),
-    "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
-);

@@ -12,7 +12,7 @@ export const emailValidate = async email => {
 	} catch (err) {
 		if (process.env.VERBOSE_MODE) console.log({ err })
 		return -1
-	} //FIXME
+	}
 }
 
 export default emailValidate
