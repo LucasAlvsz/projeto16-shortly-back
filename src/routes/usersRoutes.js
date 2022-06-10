@@ -1,6 +1,6 @@
 import { Router } from "express"
 
-import { getUserById } from "../controllers/usersController.js"
+import { getUserById, getRanking } from "../controllers/usersController.js"
 
 import { bearerTokenValidate } from "../middlewares/bearerTokenValidate.js"
 import bearerTokenHeaderSchema from "../schemas/bearerTokenHeaderSchema.js"
@@ -12,5 +12,6 @@ usersRouter.get(
 	bearerTokenValidate(bearerTokenHeaderSchema),
 	getUserById
 )
+usersRouter.get("/ranking", getRanking)
 
 export default usersRouter

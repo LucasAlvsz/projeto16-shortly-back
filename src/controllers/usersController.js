@@ -30,9 +30,27 @@ export const getUserById = async (req, res) => {
 		const userData = user.rows[0]
 		const userShortUrls = shortUrls.rows
 		res.status(200).send({ ...userData, shortnedUrls: userShortUrls })
-	} catch (error) {
-		if (process.env.VERBOSE_MODE) console.log({ error })
+	} catch (err) {
+		if (process.env.VERBOSE_MODE) console.log({ err })
 		if (error.code === "22P02") return res.sendStatus(404)
+		res.sendStatus(500)
+	}
+}
+
+export const getRanking = async (req, res) => {
+	try {
+		const { rows } = await db.query(`--sql
+			SELECT users.id, users.name,
+			COUNT("shortUrls"."userId") as "linkCount",
+			COALESCE(SUM("shortUrls".views),0) as "visitCount"
+			FROM users
+				LEFT JOIN "shortUrls" ON "shortUrls"."userId" = users.id
+			GROUP BY users.id
+			ORDER BY "linkCount" DESC LIMIT 10
+		`)
+		res.status(200).send(rows)
+	} catch (error) {
+		if (process.env.VERBOSE_MODE) console.log({ err })
 		res.sendStatus(500)
 	}
 }
