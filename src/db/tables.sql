@@ -15,9 +15,9 @@ CREATE TABLE urls(
 CREATE TABLE "shortUrls"(
     id SERIAL PRIMARY KEY,
     "shortUrl" TEXT NOT NULL UNIQUE,
-    views BIGINT NOT NULL,
-    "userId" INTEGER REFERENCES users(id),
-    "urlId" INTEGER REFERENCES urls(id),
+    views BIGINT NOT NULL DEFAULT 0,
+    "userId" INTEGER NOT NULL REFERENCES users(id),
+    "urlId" INTEGER NOT NULL REFERENCES urls(id),
     "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -25,6 +25,6 @@ CREATE TABLE sessions(
     id SERIAL PRIMARY KEY,
     "loggedInAt" TIMESTAMP NOT NULL,
     "loggedOutAt" TIMESTAMP,
-    "userId" INTEGER REFERENCES users(id),
+    "userId" INTEGER NOT NULL REFERENCES users(id),
     "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );

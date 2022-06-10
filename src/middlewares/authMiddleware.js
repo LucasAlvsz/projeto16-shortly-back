@@ -11,11 +11,11 @@ export const signUpValidation = async (req, res, next) => {
 
 export const signInValidation = async (req, res, next) => {
 	const existingUserValidation = await emailValidation(req.body.email)
-	const { name, email, password } = existingUserValidation
+	const { id, name, email, password } = existingUserValidation
 	if (!email) return res.status(401).send("Incorrect email or password")
 	else if (existingUserValidation === -1) return res.sendStatus(500)
 	if (!decryptPassword(req.body.password, password))
 		return res.status(401).send("Incorrect email or password")
-	res.locals.userData = { name, email }
+	res.locals.userData = { id, name, email }
 	next()
 }

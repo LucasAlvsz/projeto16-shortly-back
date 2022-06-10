@@ -1,7 +1,6 @@
 import db from "../db/index.js"
 import encryptsPassword from "../utils/encryptsPassword.js"
 import JWTGenerator from "../utils/JWTGenerator.js"
-import JWTVerify from "../utils/JWTVerify.js"
 
 export const signUp = async (req, res) => {
 	const { name, email } = req.body
